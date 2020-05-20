@@ -3,7 +3,7 @@ import {Image} from 'react-native';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createAppContainer} from 'react-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Ionicons from 'react-native-vector-icons/MaterialCommunityIcons';
+//import Ionicons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Saved from '../screens/Saved';
 import Explore from '../screens/Explore';
