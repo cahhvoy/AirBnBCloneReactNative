@@ -31,11 +31,24 @@ export default class Explore extends Component {
         }
         
         this.scrollY = new Animated.Value(0);
-            this.animatedHeaderHeight = this.scrollY.interpolate({
+
+        this.animatedHeaderHeight = this.scrollY.interpolate({
                 inputRange:[0,50],
                 outputRange:[this.startHeaderHeight,this.endHeaderHeight],
                 extrapolate:"clamp"
-            })
+        })
+
+        this.animatedOpacity = this.animatedHeaderHeight.interpolate({
+            inputRange:[this.endHeaderHeight,this.startHeaderHeight],
+            outputRange:[0,1],
+            extrapolate:'clamp'
+        })
+
+        this.animatedTagTop = this.animatedHeaderHeight.interpolate({
+            inputRange:[this.endHeaderHeight,this.startHeaderHeight],
+            outputRange:[-30,10],
+            extrapolate:'clamp'
+        })
     }
     render() {
         return (
@@ -53,7 +66,7 @@ export default class Explore extends Component {
                          </View>
                          <Animated.View
                            style={{flexDirection:'row',marginHorizontal:20,position:'relative',
-                             top:10}}>
+                             top:this.animatedTagTop,opacity:this.animatedOpacity}}>
                            <Tag tag='Guests'/>
                            <Tag tag='Dates'/>                          
                          </Animated.View>
@@ -68,7 +81,7 @@ export default class Explore extends Component {
                               
                           ],
                           {
-                            useNativeDriver: true,
+                            useNativeDriver: false,
                           }
                       )} >
                         <View style={{flex:1,paddingTop:20,backgroundColor:'#ffffff'}}>
