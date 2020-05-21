@@ -9,26 +9,40 @@ import { Text,
      StatusBar,
      ScrollView,
      Image,
-     Dimensions} from 'react-native'
+     Dimensions,
+     Animated,
+     NativeEventEmitter} from 'react-native'
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import Category from '../Components/Explore/Category.js';
+import Home from '../Components/Explore/Home.js';
+import Tag from '../Components/Explore/Tag.js';
+
 const {height,width} = Dimensions.get('window');
 
 export default class Explore extends Component {
 
     UNSAFE_componentWillMount(){
         this.startHeaderHeight=80;
-        if(Platform.OS=='android'){
-            this.startHeaderHeight=100+ StatusBar.currentHeight
+        this.endHeaderHeight=50;
+        if(Platform.OS==='android'){
+            this.startHeaderHeight= 140 + StatusBar.currentHeight;
+            this.endHeaderHeight= 110 + StatusBar.currentHeight
         }
+        
+        this.scrollY = new Animated.Value(0);
+            this.animatedHeaderHeight = this.scrollY.interpolate({
+                inputRange:[0,50],
+                outputRange:[this.startHeaderHeight,this.endHeaderHeight],
+                extrapolate:"clamp"
+            })
     }
     render() {
         return (
             <SafeAreaView style={{flex:1}}>
                  <View style={{flex:1}}>
-                     <View style={[styles.Header,{height:this.startHeaderHeight}]}>
-                         <View style={[styles.HeaderInHld,{marginTop:Platform.OS=="android"?30:null}]}>
+                     <Animated.View style={[styles.Header,{height:this.animatedHeaderHeight}]}>
+                         <View style={[styles.HeaderInHld,{marginTop:Platform.OS==="android"?30:null}]}>
                              <Icon name="ios-search" size={30} style={{alignSelf:"center"}}/>
                              <TextInput
                              underlineColorAndroid="transparent"
@@ -37,8 +51,26 @@ export default class Explore extends Component {
                                style={styles.HeaderInput}
                              />
                          </View>
-                     </View>
-                     <ScrollView scrollEventThrottle={16}>
+                         <Animated.View
+                           style={{flexDirection:'row',marginHorizontal:20,position:'relative',
+                             top:10}}>
+                           <Tag tag='Guests'/>
+                           <Tag tag='Dates'/>                          
+                         </Animated.View>
+                     </Animated.View>
+                     <ScrollView 
+                      scrollEventThrottle={16}
+                      onScroll={Animated.event(
+                          [
+                              {
+                                  nativeEvent:{contentOffset:{y:this.scrollY}}
+                              }
+                              
+                          ],
+                          {
+                            useNativeDriver: true,
+                          }
+                      )} >
                         <View style={{flex:1,paddingTop:20,backgroundColor:'#ffffff'}}>
                             <Text style={{fontSize:24,fontWeight:'700',paddingHorizontal:20}}>
                                 What can we help ou find, Cahhvoy ?
@@ -64,7 +96,7 @@ export default class Explore extends Component {
                                 <Text style={{fontSize:24,fontWeight:'700'}}>
                                     Introducing Airbnb Plus
                                 </Text>
-                                <Text style={{fontWeight:'100',margintop:10}}>
+                                <Text style={{fontWeight:'100',marginTop:10}}>
                                     A new selection of homes verified for quality and comfort
                                 </Text>
                                 <View style={{width:width-40,height:200,marginTop:20}}>
@@ -74,6 +106,16 @@ export default class Explore extends Component {
                                             borderRadius:5,borderWidth:1,borderColor:'#dddddd'}}
                                     />
                                 </View>
+                            </View>
+                        </View>
+                        <View style={{marginTop:40}}>
+                            <Text style={{fontSize:24,fontWeight:'700',paddingHorizontal:20}}>
+                                Homes around the world
+                            </Text>
+                            <View style={{margintop:20,paddingHorizontal:20,flexDirection:'row',flexWrap:'wrap',justifyContent:'space-between'}}>
+                                <Home type="PRIVATE - 3 BEDROOM" name="cool place" price='130' rating={4} width={width}/>
+                                <Home  type="BUSH HOUSE " name="nature living" price='75' rating={2} width={width}/>
+                                <Home  type="APARTMENT BUILDING- 1 BEDROOM" name="cool place" price='60' rating={3} width={width}/>
                             </View>
                         </View>
                      </ScrollView>
